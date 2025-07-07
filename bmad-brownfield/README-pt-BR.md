@@ -16,12 +16,18 @@ make analyze GEMINI_MODEL=gemini-2.5-flash    # Força Flash explicitamente
 gemini --model gemini-2.5-flash -p "seu comando aqui"
 ```
 
-### Configuração Permanente
+### Configuração Interativa (NOVO!)
 ```bash
-# Ver configuração atual
+# Escolher modelo através de menu interativo
 make set-model
 
-# Ajuda específica para quota
+# Ou usar o alias
+make change-model
+```
+
+### Configuração Manual
+```bash
+# Ver configuração atual e opções
 make quota-help
 ```
 
@@ -32,13 +38,32 @@ make quota-help
 - **gemini-2.5-pro** - Melhor qualidade, mais quota, para tarefas complexas
 
 ### Como Usar
+
+#### **Método 1: Configuração Interativa (RECOMENDADO)**
+```bash
+# Menu interativo para escolher modelo
+make set-model
+# Escolha:
+# 1) gemini-2.5-flash (rápido, evita quota)
+# 2) gemini-2.5-pro (melhor qualidade)
+# 3) Cancelar
+
+# Depois use normalmente
+make analyze
+make brownfield-flow
+```
+
+#### **Método 2: Temporário por Comando**
 ```bash
 # Usar Flash (padrão - evita quota exceeded)
 make analyze
 
 # Usar Pro temporariamente (quando quota permitir)
 make analyze GEMINI_MODEL=gemini-2.5-pro
+```
 
+#### **Método 3: Configurar para Sessão**
+```bash
 # Configurar modelo para toda sessão
 export GEMINI_MODEL=gemini-2.5-flash
 make brownfield-flow
