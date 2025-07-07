@@ -246,7 +246,7 @@ analyze: ## 📊 Documentar estado atual do projeto
 	@echo "$(BLUE)📊 Analisando estado atual do projeto '$(PROJECT_NAME)'...$(NC)"
 	@echo "$(YELLOW)⏱️  Tempo estimado: 5-10 minutos$(NC)"
 	@echo "$(CYAN)🤖 Executando: @analyst *document-project$(NC)"
-	@gemini -p '$(AGENT_PREFIX) @analyst *document-project' || \
+	@gemini $(MODEL_FLAG) -p '$(AGENT_PREFIX) @analyst *document-project' || \
 		(echo "$(RED)❌ Erro na análise do projeto$(NC)" && exit 1)
 	@echo "$(GREEN)✅ Análise do projeto concluída!$(NC)"
 	@echo "$(BLUE)📄 Documentos gerados: docs/project-analysis.md$(NC)"
