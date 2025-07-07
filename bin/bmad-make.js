@@ -22,6 +22,11 @@ const installationTypes = [
     name: 'BMAD Brownfield - Para projetos existentes',
     value: 'bmad-brownfield',
     description: 'Configuração completa para projetos já em andamento com guias, Makefile e documentação'
+  },
+  {
+    name: 'BMAD Greenfield - Para projetos novos (do zero)',
+    value: 'bmad-greenfield',
+    description: 'Configuração completa para projetos novos com brainstorming, planejamento e desenvolvimento do zero'
   }
 ];
 
@@ -82,6 +87,12 @@ async function main() {
       console.log(chalk.white('2. Execute: ') + chalk.yellow('make help') + chalk.gray(' (para ver todos os comandos disponíveis)'));
       console.log(chalk.white('3. Inicie com: ') + chalk.yellow('make full-setup') + chalk.gray(' (configuração completa)'));
       console.log(chalk.white('4. Ou execute: ') + chalk.yellow('make brownfield-flow') + chalk.gray(' (fluxo completo)'));
+    } else if (selectedType === 'bmad-greenfield') {
+      console.log(chalk.white('1. Leia o guia: ') + chalk.yellow('guia-bmad-method-projetos-greenfield.md'));
+      console.log(chalk.white('2. Execute: ') + chalk.yellow('make help -f Makefile.greenfield') + chalk.gray(' (para ver todos os comandos disponíveis)'));
+      console.log(chalk.white('3. Inicie com: ') + chalk.yellow('make full-setup -f Makefile.greenfield') + chalk.gray(' (configuração completa)'));
+      console.log(chalk.white('4. Ou execute: ') + chalk.yellow('make greenfield-flow -f Makefile.greenfield') + chalk.gray(' (fluxo completo)'));
+      console.log(chalk.white('5. Para começar com ideias: ') + chalk.yellow('make brainstorm -f Makefile.greenfield') + chalk.gray(' (sessão de brainstorming)'));
     }
 
     console.log(chalk.gray('\n💡 Para mais informações, consulte o README.md'));
