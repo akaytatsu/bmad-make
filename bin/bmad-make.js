@@ -33,26 +33,9 @@ async function main() {
     console.log(chalk.yellow('🚀 Bem-vindo ao BMAD-Make!'));
     console.log(chalk.gray('Este tool irá configurar seu projeto com o BMAD-Method.\n'));
 
-    // Verificar se o diretório atual está vazio ou se é seguro instalar
+    // Obter diretório atual
     const currentDir = process.cwd();
-    const files = await fs.readdir(currentDir);
-
-    if (files.length > 0) {
-      console.log(chalk.yellow('⚠️  O diretório atual não está vazio.'));
-      const { confirmInstall } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'confirmInstall',
-          message: 'Deseja continuar com a instalação neste diretório?',
-          default: true
-        }
-      ]);
-
-      if (!confirmInstall) {
-        console.log(chalk.red('❌ Instalação cancelada pelo usuário.'));
-        process.exit(0);
-      }
-    }
+    console.log(chalk.blue(`📁 Instalando no diretório: ${path.basename(currentDir)}`));
 
     // Selecionar tipo de instalação
     const { selectedType } = await inquirer.prompt([
