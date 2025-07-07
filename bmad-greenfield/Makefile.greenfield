@@ -433,7 +433,7 @@ create-epic: ## 📝 Criar épico para greenfield
 	@echo ""
 	@echo "$(YELLOW)3. Dentro do Gemini CLI, digite:$(NC)"
 	@echo ""
-	@echo "$(CYAN)$(AGENT_PREFIX) @pm *greenfield-create-epic$(NC)"
+	@echo "$(CYAN)$(AGENT_PREFIX) @pm *create-epic$(NC)"
 	@echo ""
 	@echo "$(YELLOW)4. Quando terminar, digite '/exit' para sair$(NC)"
 	@echo ""
