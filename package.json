@@ -1,0 +1,46 @@
+{
+    "name": "bmad-make",
+    "version": "1.0.0",
+    "description": "BMAD-Method CLI tool para criação e configuração de projetos com diferentes tipos de instalação",
+    "main": "bin/bmad-make.js",
+    "bin": {
+        "bmad-make": "./bin/bmad-make.js"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "bmad",
+        "method",
+        "cli",
+        "project",
+        "setup",
+        "brownfield",
+        "gemini",
+        "ai"
+    ],
+    "author": "BMAD Team",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/akaytatsu/bmad-make.git"
+    },
+    "homepage": "https://github.com/akaytatsu/bmad-make#readme",
+    "bugs": {
+        "url": "https://github.com/akaytatsu/bmad-make/issues"
+    },
+    "dependencies": {
+        "inquirer": "^9.2.12",
+        "fs-extra": "^11.2.0",
+        "chalk": "^4.1.2",
+        "ora": "^5.4.1"
+    },
+    "engines": {
+        "node": ">=16.0.0"
+    },
+    "files": [
+        "bin/",
+        "bmad-brownfield/",
+        "README.md"
+    ]
+}

@@ -1,0 +1,349 @@
+# Makefile para BMAD-Method com Gemini CLI
+# Este Makefile automatiza todo o fluxo de trabalho do BMAD-Method para projetos existentes
+
+.PHONY: help install setup-gemini setup-bmad check-deps \
+        analyze plan-prd plan-arch validate create-epic create-stories \
+        implement-story refactor fix-bug migrate test-connection \
+        clean-docs status full-setup brownfield-flow
+
+# Variáveis de configuração
+GEMINI_CLI_VERSION := latest
+PROJECT_NAME := $(shell basename $(PWD))
+STORY_NUMBER ?= 1.1
+
+# Cores para output
+RED := \033[0;31m
+GREEN := \033[0;32m
+YELLOW := \033[1;33m
+BLUE := \033[0;34m
+PURPLE := \033[0;35m
+CYAN := \033[0;36m
+NC := \033[0m # No Color
+
+##@ Ajuda e Informações
+
+help: ## 📋 Exibir esta mensagem de ajuda
+	@echo "$(CYAN)╔══════════════════════════════════════════════════════════════╗$(NC)"
+	@echo "$(CYAN)║                    BMAD-Method Makefile                      ║$(NC)"
+	@echo "$(CYAN)║              Automação para Projetos Existentes             ║$(NC)"
+	@echo "$(CYAN)╚══════════════════════════════════════════════════════════════╝$(NC)"
+	@echo ""
+	@echo "$(YELLOW)📦 INSTALAÇÃO E CONFIGURAÇÃO:$(NC)"
+	@echo "  $(GREEN)make install$(NC)          - Instalar Gemini CLI e BMAD-Method"
+	@echo "  $(GREEN)make setup-gemini$(NC)     - Configurar apenas Gemini CLI"
+	@echo "  $(GREEN)make setup-bmad$(NC)       - Configurar apenas BMAD-Method"
+	@echo "  $(GREEN)make setup-oauth$(NC)      - Configurar autenticação OAuth"
+	@echo "  $(GREEN)make check-deps$(NC)       - Verificar dependências instaladas"
+	@echo "  $(GREEN)make test-connection$(NC)  - Testar conexão com Gemini API"
+	@echo ""
+	@echo "$(YELLOW)🚀 FLUXO COMPLETO (RECOMENDADO):$(NC)"
+	@echo "  $(GREEN)make full-setup$(NC)       - Instalação completa + configuração"
+	@echo "  $(GREEN)make brownfield-flow$(NC)  - Executar fluxo completo para brownfield"
+	@echo ""
+	@echo "$(YELLOW)📊 ANÁLISE E DOCUMENTAÇÃO:$(NC)"
+	@echo "  $(GREEN)make analyze$(NC)          - Documentar estado atual do projeto"
+	@echo "  $(GREEN)make plan-prd$(NC)         - Criar PRD para brownfield"
+	@echo "  $(GREEN)make plan-arch$(NC)        - Criar arquitetura para brownfield"
+	@echo "  $(GREEN)make validate$(NC)         - Executar checklist de validação"
+	@echo ""
+	@echo "$(YELLOW)📝 CRIAÇÃO DE ÉPICOS E HISTÓRIAS:$(NC)"
+	@echo "  $(GREEN)make create-epic$(NC)      - Criar épico para brownfield"
+	@echo "  $(GREEN)make create-stories$(NC)   - Criar histórias de usuário"
+	@echo ""
+	@echo "$(YELLOW)💻 IMPLEMENTAÇÃO:$(NC)"
+	@echo "  $(GREEN)make implement-story$(NC)  - Implementar história específica"
+	@echo "  $(GREEN)make refactor$(NC)         - Refatorar código existente"
+	@echo "  $(GREEN)make fix-bug$(NC)          - Corrigir bug complexo"
+	@echo "  $(GREEN)make migrate$(NC)          - Migração de tecnologia"
+	@echo ""
+	@echo "$(YELLOW)🔧 UTILITÁRIOS:$(NC)"
+	@echo "  $(GREEN)make status$(NC)           - Status das instalações"
+	@echo "  $(GREEN)make clean-docs$(NC)       - Limpar documentação gerada"
+	@echo ""
+	@echo "$(YELLOW)📖 EXEMPLOS DE USO:$(NC)"
+	@echo "  $(CYAN)make install$(NC)                    # Primeira instalação"
+	@echo "  $(CYAN)make brownfield-flow$(NC)           # Fluxo completo"
+	@echo "  $(CYAN)make implement-story STORY_NUMBER=1.2$(NC)  # Implementar história específica"
+	@echo ""
+	@echo "$(YELLOW)⚠️  REQUISITOS:$(NC)"
+	@echo "  - Node.js v20+"
+	@echo "  - Conta Google para autenticação OAuth"
+	@echo "  - Projeto existente com estrutura definida"
+	@echo ""
+
+##@ Instalação e Configuração
+
+install: ## 🔧 Instalar Gemini CLI e BMAD-Method (comando principal)
+	@echo "$(CYAN)🚀 Iniciando instalação completa...$(NC)"
+	@$(MAKE) setup-gemini
+	@$(MAKE) setup-bmad
+	@$(MAKE) check-deps
+	@echo "$(GREEN)✅ Instalação completa finalizada!$(NC)"
+
+setup-gemini: ## 🤖 Instalar e configurar Gemini CLI
+	@echo "$(BLUE)📦 Instalando Gemini CLI...$(NC)"
+	@if ! command -v gemini >/dev/null 2>&1; then \
+		echo "$(YELLOW)⬇️  Instalando @google/gemini-cli globalmente...$(NC)"; \
+		npm install -g @google/gemini-cli; \
+	else \
+		echo "$(GREEN)✅ Gemini CLI já está instalado$(NC)"; \
+	fi
+	@echo "$(BLUE)🔑 Verificando configuração da API Key...$(NC)"
+	@if [ -z "$$GEMINI_API_KEY" ]; then \
+		echo "$(RED)❌ GEMINI_API_KEY não está configurada!$(NC)"; \
+		echo "$(YELLOW)💡 Configure com: export GEMINI_API_KEY='sua_api_key'$(NC)"; \
+		echo "$(YELLOW)💡 Para tornar permanente: echo 'export GEMINI_API_KEY=\"sua_key\"' >> ~/.bashrc$(NC)"; \
+		exit 1; \
+	else \
+		echo "$(GREEN)✅ GEMINI_API_KEY configurada$(NC)"; \
+	fi
+	@echo "$(BLUE)🧪 Testando instalação do Gemini CLI...$(NC)"
+	@gemini --version || (echo "$(RED)❌ Erro na instalação do Gemini CLI$(NC)" && exit 1)
+	@echo "$(GREEN)✅ Gemini CLI instalado e configurado com sucesso!$(NC)"
+
+setup-bmad: ## 🎯 Instalar e configurar BMAD-Method
+	@echo "$(PURPLE)📦 Instalando BMAD-Method...$(NC)"
+	@echo "$(YELLOW)⚠️  Durante a instalação, selecione 'Gemini CLI' quando perguntado sobre o IDE$(NC)"
+	@echo "$(YELLOW)⚠️  Escolha 'Complete installation' para projetos existentes$(NC)"
+	@echo "$(BLUE)🔄 Executando instalação interativa...$(NC)"
+	@npx bmad-method install
+	@echo "$(GREEN)✅ BMAD-Method instalado com sucesso!$(NC)"
+
+check-deps: ## ✅ Verificar se todas as dependências estão instaladas
+	@echo "$(CYAN)🔍 Verificando dependências...$(NC)"
+	@echo "$(BLUE)📋 Verificando Node.js...$(NC)"
+	@node --version || (echo "$(RED)❌ Node.js não encontrado$(NC)" && exit 1)
+	@echo "$(BLUE)📋 Verificando npm...$(NC)"
+	@npm --version || (echo "$(RED)❌ npm não encontrado$(NC)" && exit 1)
+	@echo "$(BLUE)📋 Verificando Gemini CLI...$(NC)"
+	@gemini --version || (echo "$(RED)❌ Gemini CLI não encontrado$(NC)" && exit 1)
+	@echo "$(BLUE)📋 Verificando BMAD-Method...$(NC)"
+	@npx bmad-method status || (echo "$(YELLOW)⚠️  BMAD-Method pode não estar configurado$(NC)")
+	@echo "$(BLUE)📋 Verificando autenticação OAuth...$(NC)"
+	@echo "$(GREEN)✅ Usando autenticação OAuth (sem necessidade de API Key)$(NC)"
+	@echo "$(YELLOW)💡 Se houver problemas de autenticação, execute: make setup-oauth$(NC)"
+	@echo "$(GREEN)✅ Todas as dependências estão OK!$(NC)"
+
+test-connection: ## 🧪 Testar conexão com Gemini API
+	@echo "$(BLUE)🔗 Testando conexão com Gemini API...$(NC)"
+	@gemini -p "Hello, this is a connection test. Please respond with 'Connection successful!'" || \
+		(echo "$(RED)❌ Falha na conexão com Gemini API$(NC)" && exit 1)
+	@echo "$(GREEN)✅ Conexão com Gemini API funcionando!$(NC)"
+
+##@ Fluxos Completos
+
+full-setup: ## 🚀 Configuração completa (instalação + verificação + teste)
+	@echo "$(CYAN)🚀 Iniciando configuração completa do ambiente...$(NC)"
+	@$(MAKE) install
+	@$(MAKE) test-connection
+	@echo "$(GREEN)🎉 Ambiente completamente configurado e testado!$(NC)"
+	@echo "$(YELLOW)💡 Próximo passo: execute 'make brownfield-flow' para começar$(NC)"
+
+brownfield-flow: ## 🔄 Executar fluxo completo para projetos brownfield
+	@echo "$(CYAN)🔄 Iniciando fluxo completo para projeto brownfield...$(NC)"
+	@echo "$(YELLOW)📊 Fase 1: Análise e Documentação$(NC)"
+	@$(MAKE) analyze
+	@echo "$(YELLOW)📋 Fase 2: Planejamento$(NC)"
+	@$(MAKE) plan-prd
+	@$(MAKE) plan-arch
+	@echo "$(YELLOW)✅ Fase 3: Validação$(NC)"
+	@$(MAKE) validate
+	@echo "$(YELLOW)📝 Fase 4: Criação de Épicos$(NC)"
+	@$(MAKE) create-epic
+	@echo "$(GREEN)🎉 Fluxo brownfield completo! Próximos passos:$(NC)"
+	@echo "$(CYAN)  1. make create-stories     # Criar histórias detalhadas$(NC)"
+	@echo "$(CYAN)  2. make implement-story    # Implementar primeira história$(NC)"
+
+##@ Análise e Documentação
+
+analyze: ## 📊 Documentar estado atual do projeto
+	@echo "$(BLUE)📊 Analisando estado atual do projeto '$(PROJECT_NAME)'...$(NC)"
+	@echo "$(YELLOW)⏱️  Tempo estimado: 5-10 minutos$(NC)"
+	@echo "$(CYAN)🤖 Executando: @analyst *document-project$(NC)"
+	@gemini -p "@analyst *document-project" || \
+		(echo "$(RED)❌ Erro na análise do projeto$(NC)" && exit 1)
+	@echo "$(GREEN)✅ Análise do projeto concluída!$(NC)"
+	@echo "$(BLUE)📄 Documentos gerados: docs/project-analysis.md$(NC)"
+
+plan-prd: ## 📋 Criar PRD para brownfield
+	@echo "$(PURPLE)📋 Criando PRD para projeto brownfield...$(NC)"
+	@echo "$(YELLOW)⏱️  Tempo estimado: 15-20 minutos$(NC)"
+	@echo "$(YELLOW)💡 Você será questionado sobre melhorias desejadas$(NC)"
+	@echo "$(CYAN)🤖 Executando: @pm *create-doc brownfield-prd$(NC)"
+	@gemini -p "@pm *create-doc brownfield-prd" || \
+		(echo "$(RED)❌ Erro na criação do PRD$(NC)" && exit 1)
+	@echo "$(GREEN)✅ PRD para brownfield criado!$(NC)"
+	@echo "$(BLUE)📄 Documento gerado: docs/prd.md$(NC)"
+
+plan-arch: ## 🏗️ Criar arquitetura para brownfield
+	@echo "$(CYAN)🏗️  Criando arquitetura para projeto brownfield...$(NC)"
+	@echo "$(YELLOW)⏱️  Tempo estimado: 20-30 minutos$(NC)"
+	@echo "$(YELLOW)💡 Você será questionado sobre arquitetura atual$(NC)"
+	@echo "$(CYAN)🤖 Executando: @architect *create-doc brownfield-architecture$(NC)"
+	@gemini -p "@architect *create-doc brownfield-architecture" || \
+		(echo "$(RED)❌ Erro na criação da arquitetura$(NC)" && exit 1)
+	@echo "$(GREEN)✅ Arquitetura para brownfield criada!$(NC)"
+	@echo "$(BLUE)📄 Documento gerado: docs/architecture.md$(NC)"
+
+validate: ## ✅ Executar checklist de validação
+	@echo "$(GREEN)✅ Executando checklist de validação...$(NC)"
+	@echo "$(YELLOW)⏱️  Tempo estimado: 10-15 minutos$(NC)"
+	@echo "$(YELLOW)💡 Revise cada item apresentado cuidadosamente$(NC)"
+	@echo "$(CYAN)🤖 Executando: @po *execute-checklist po-master-checklist$(NC)"
+	@gemini -p "@po *execute-checklist po-master-checklist" || \
+		(echo "$(RED)❌ Erro na validação$(NC)" && exit 1)
+	@echo "$(GREEN)✅ Validação concluída!$(NC)"
+
+##@ Criação de Épicos e Histórias
+
+create-epic: ## 📝 Criar épico para brownfield
+	@echo "$(PURPLE)📝 Criando épico para projeto brownfield...$(NC)"
+	@echo "$(YELLOW)💡 Você definirá nome, objetivo e critérios de sucesso$(NC)"
+	@echo "$(CYAN)🤖 Executando: @pm *brownfield-create-epic$(NC)"
+	@gemini -p "@pm *brownfield-create-epic" || \
+		(echo "$(RED)❌ Erro na criação do épico$(NC)" && exit 1)
+	@echo "$(GREEN)✅ Épico criado com sucesso!$(NC)"
+
+create-stories: ## 📖 Criar histórias de usuário detalhadas
+	@echo "$(BLUE)📖 Criando histórias de usuário...$(NC)"
+	@echo "$(YELLOW)💡 Execute múltiplas vezes para criar várias histórias$(NC)"
+	@echo "$(CYAN)🤖 Executando: @sm create-next-story$(NC)"
+	@gemini -p "@sm create-next-story" || \
+		(echo "$(RED)❌ Erro na criação da história$(NC)" && exit 1)
+	@echo "$(GREEN)✅ História criada!$(NC)"
+	@echo "$(BLUE)💡 Para criar mais histórias, execute: make create-stories$(NC)"
+
+##@ Implementação
+
+implement-story: ## 💻 Implementar história específica
+	@echo "$(GREEN)💻 Implementando história $(STORY_NUMBER)...$(NC)"
+	@echo "$(YELLOW)💡 Use STORY_NUMBER=X.Y para especificar a história$(NC)"
+	@echo "$(CYAN)🤖 Executando: @dev implement story $(STORY_NUMBER)$(NC)"
+	@gemini -p "@dev implement story $(STORY_NUMBER)" || \
+		(echo "$(RED)❌ Erro na implementação da história$(NC)" && exit 1)
+	@echo "$(GREEN)✅ História $(STORY_NUMBER) implementada!$(NC)"
+
+refactor: ## 🔧 Refatorar código existente
+	@echo "$(YELLOW)🔧 Iniciando processo de refatoração...$(NC)"
+	@echo "$(BLUE)📊 Passo 1: Analisando projeto atual...$(NC)"
+	@gemini -p "@analyst *document-project"
+	@echo "$(BLUE)🏗️  Passo 2: Revisando arquitetura...$(NC)"
+	@gemini -p "@architect *review-architecture"
+	@echo "$(BLUE)📋 Passo 3: Planejando refatoração...$(NC)"
+	@gemini -p "@pm *create-doc brownfield-prd"
+	@echo "$(GREEN)✅ Análise de refatoração concluída!$(NC)"
+	@echo "$(YELLOW)💡 Próximo passo: Especifique o componente a refatorar$(NC)"
+	@echo "$(CYAN)💡 Exemplo: gemini -p '@dev refactor [nome-do-componente]'$(NC)"
+
+fix-bug: ## 🐛 Processo para corrigir bug complexo
+	@echo "$(RED)🐛 Iniciando processo de correção de bug...$(NC)"
+	@echo "$(BLUE)📊 Passo 1: Analisando problema...$(NC)"
+	@gemini -p "@analyst *document-project"
+	@echo "$(GREEN)✅ Análise inicial concluída!$(NC)"
+	@echo "$(YELLOW)💡 Próximos passos manuais:$(NC)"
+	@echo "$(CYAN)  1. gemini -p '@dev analyze bug [descrição-do-bug]'$(NC)"
+	@echo "$(CYAN)  2. gemini -p '@architect *design-fix [bug]'$(NC)"
+	@echo "$(CYAN)  3. gemini -p '@dev fix [bug]'$(NC)"
+	@echo "$(CYAN)  4. gemini -p '@qa validate [correção]'$(NC)"
+
+migrate: ## 🔄 Processo de migração de tecnologia
+	@echo "$(PURPLE)🔄 Iniciando processo de migração...$(NC)"
+	@echo "$(BLUE)📊 Passo 1: Documentando estado atual...$(NC)"
+	@gemini -p "@analyst *document-project"
+	@echo "$(GREEN)✅ Documentação inicial concluída!$(NC)"
+	@echo "$(YELLOW)💡 Próximos passos manuais:$(NC)"
+	@echo "$(CYAN)  1. gemini -p '@architect *create-doc migration-architecture'$(NC)"
+	@echo "$(CYAN)  2. gemini -p '@pm *create-migration-roadmap'$(NC)"
+	@echo "$(CYAN)  3. gemini -p '@po *execute-checklist migration-checklist'$(NC)"
+	@echo "$(CYAN)  4. gemini -p '@dev implement migration-phase [número]'$(NC)"
+
+##@ Utilitários
+
+status: ## 📊 Verificar status das instalações
+	@echo "$(CYAN)📊 Status do ambiente BMAD-Method:$(NC)"
+	@echo ""
+	@echo "$(BLUE)🔧 Dependências:$(NC)"
+	@printf "  Node.js: "
+	@node --version 2>/dev/null && echo "$(GREEN)✅$(NC)" || echo "$(RED)❌$(NC)"
+	@printf "  npm: "
+	@npm --version 2>/dev/null && echo "$(GREEN)✅$(NC)" || echo "$(RED)❌$(NC)"
+	@printf "  Gemini CLI: "
+	@gemini --version 2>/dev/null && echo "$(GREEN)✅$(NC)" || echo "$(RED)❌$(NC)"
+	@echo ""
+	@echo "$(BLUE)🔑 Configuração:$(NC)"
+	@printf "  Autenticação OAuth: "
+	@echo "$(GREEN)✅ Configurada (sem necessidade de API Key)$(NC)"
+	@echo ""
+	@echo "$(BLUE)📁 Estrutura do Projeto:$(NC)"
+	@printf "  core-config.yml: "
+	@if [ -f "core-config.yml" ]; then echo "$(GREEN)✅ Existe$(NC)"; else echo "$(YELLOW)⚠️  Não encontrado$(NC)"; fi
+	@printf "  docs/: "
+	@if [ -d "docs" ]; then echo "$(GREEN)✅ Existe$(NC)"; else echo "$(YELLOW)⚠️  Não encontrado$(NC)"; fi
+	@printf "  .gemini/: "
+	@if [ -d ".gemini" ]; then echo "$(GREEN)✅ Existe$(NC)"; else echo "$(YELLOW)⚠️  Não encontrado$(NC)"; fi
+	@echo ""
+	@echo "$(BLUE)📊 Status BMAD-Method:$(NC)"
+	@npx bmad-method status 2>/dev/null || echo "$(YELLOW)⚠️  Execute 'make setup-bmad' para configurar$(NC)"
+
+clean-docs: ## 🧹 Limpar documentação gerada
+	@echo "$(YELLOW)🧹 Limpando documentação gerada...$(NC)"
+	@if [ -d "docs" ]; then \
+		echo "$(BLUE)📁 Removendo docs/...$(NC)"; \
+		rm -rf docs/; \
+	fi
+	@if [ -d ".ai" ]; then \
+		echo "$(BLUE)📁 Removendo .ai/...$(NC)"; \
+		rm -rf .ai/; \
+	fi
+	@if [ -f "core-config.yml" ]; then \
+		echo "$(BLUE)📄 Removendo core-config.yml...$(NC)"; \
+		rm -f core-config.yml; \
+	fi
+	@echo "$(GREEN)✅ Documentação limpa!$(NC)"
+	@echo "$(YELLOW)💡 Execute 'make setup-bmad' para reconfigurar$(NC)"
+
+##@ Comandos de Desenvolvimento
+
+dev-help: ## 🛠️ Comandos úteis para desenvolvimento
+	@echo "$(CYAN)🛠️  Comandos úteis do Gemini CLI:$(NC)"
+	@echo ""
+	@echo "$(YELLOW)📊 Sistema:$(NC)"
+	@echo "  $(GREEN)gemini -p '/help'$(NC)          - Ajuda do Gemini CLI"
+	@echo "  $(GREEN)gemini -p '/stats'$(NC)         - Estatísticas de uso"
+	@echo "  $(GREEN)gemini -p '/about'$(NC)         - Informações da versão"
+	@echo ""
+	@echo "$(YELLOW)📁 Arquivos:$(NC)"
+	@echo "  $(GREEN)gemini -p '@arquivo.txt Analise este arquivo'$(NC)"
+	@echo "  $(GREEN)gemini -p '@src/ Revise este código'$(NC)"
+	@echo ""
+	@echo "$(YELLOW)🔧 Shell:$(NC)"
+	@echo "  $(GREEN)gemini -p '!ls -la'$(NC)        - Executar comando shell"
+	@echo "  $(GREEN)gemini -p '!git status'$(NC)    - Status do git"
+	@echo ""
+	@echo "$(YELLOW)🎨 Configuração:$(NC)"
+	@echo "  $(GREEN)gemini -p '/theme'$(NC)         - Alterar tema"
+	@echo "  $(GREEN)gemini -p '/memory show'$(NC)   - Mostrar contexto"
+
+# Validações internas
+_check_oauth:
+	@echo "$(BLUE)🔐 Verificando autenticação OAuth...$(NC)"
+	@gemini -p "test" >/dev/null 2>&1 || \
+		(echo "$(RED)❌ Problema na autenticação OAuth!$(NC)" && \
+		 echo "$(YELLOW)💡 Execute: make setup-oauth$(NC)" && exit 1)
+
+_check_gemini_cli:
+	@if ! command -v gemini >/dev/null 2>&1; then \
+		echo "$(RED)❌ Gemini CLI não está instalado!$(NC)"; \
+		echo "$(YELLOW)💡 Execute: make setup-gemini$(NC)"; \
+		exit 1; \
+	fi
+
+# Adicionar validações aos comandos que precisam
+analyze plan-prd plan-arch validate create-epic create-stories implement-story: _check_oauth _check_gemini_cli
+
+# Informações do projeto
+info:
+	@echo "$(CYAN)ℹ️  Informações do Projeto:$(NC)"
+	@echo "  Nome: $(PROJECT_NAME)"
+	@echo "  Diretório: $(PWD)"
+	@echo "  Makefile: $(MAKEFILE_LIST)"
