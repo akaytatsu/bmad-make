@@ -75,6 +75,7 @@ help: ## 📋 Exibir esta mensagem de ajuda
 	@echo "  $(GREEN)make dev-help$(NC)         - Comandos úteis para desenvolvimento"
 	@echo "  $(GREEN)make quota-help$(NC)       - Ajuda para problemas de quota"
 	@echo "  $(GREEN)make set-model$(NC)        - Escolher modelo interativamente"
+	@echo "  $(GREEN)make interactive$(NC)      - Abrir Gemini CLI em modo totalmente interativo"
 	@echo ""
 	@echo "$(YELLOW)📖 EXEMPLOS DE USO:$(NC)"
 	@echo "  $(CYAN)make install$(NC)                    # Primeira instalação"
@@ -154,7 +155,7 @@ check-deps: ## ✅ Verificar se todas as dependências estão instaladas
 
 test-connection: ## 🧪 Testar conexão com Gemini API
 	@echo "$(BLUE)🔗 Testando conexão com Gemini API usando $(GEMINI_MODEL)...$(NC)"
-	@gemini $(MODEL_FLAG) -p "Hello, this is a connection test. Please respond with 'Connection successful!'" || \
+	@echo "Hello, this is a connection test. Please respond with 'Connection successful!'" | gemini $(MODEL_FLAG) || \
 		(echo "$(RED)❌ Falha na conexão com Gemini API$(NC)" && \
 		 echo "$(YELLOW)💡 Tente: make test-connection GEMINI_MODEL=gemini-2.5-flash$(NC)" && exit 1)
 	@echo "$(GREEN)✅ Conexão com Gemini API funcionando com $(GEMINI_MODEL)!$(NC)"
@@ -245,8 +246,13 @@ brownfield-flow: ## 🔄 Executar fluxo completo para projetos brownfield
 analyze: ## 📊 Documentar estado atual do projeto
 	@echo "$(BLUE)📊 Analisando estado atual do projeto '$(PROJECT_NAME)'...$(NC)"
 	@echo "$(YELLOW)⏱️  Tempo estimado: 5-10 minutos$(NC)"
-	@echo "$(CYAN)🤖 Executando: @analyst *document-project$(NC)"
-	@gemini $(MODEL_FLAG) -p '$(AGENT_PREFIX) @analyst *document-project' || \
+	@echo "$(CYAN)🤖 Iniciando sessão interativa com: @analyst *document-project$(NC)"
+	@echo "$(YELLOW)💡 O Gemini CLI será aberto em modo interativo$(NC)"
+	@echo "$(YELLOW)💡 Digite '/exit' ou '/quit' quando terminar$(NC)"
+	@echo "$(CYAN)Comando que será executado automaticamente:$(NC)"
+	@echo "$(AGENT_PREFIX) @analyst *document-project"
+	@echo ""
+	@echo "$(AGENT_PREFIX) @analyst *document-project" | gemini $(MODEL_FLAG) || \
 		(echo "$(RED)❌ Erro na análise do projeto$(NC)" && exit 1)
 	@echo "$(GREEN)✅ Análise do projeto concluída!$(NC)"
 	@echo "$(BLUE)📄 Documentos gerados: docs/project-analysis.md$(NC)"
@@ -255,8 +261,13 @@ plan-prd: ## 📋 Criar PRD para brownfield
 	@echo "$(PURPLE)📋 Criando PRD para projeto brownfield...$(NC)"
 	@echo "$(YELLOW)⏱️  Tempo estimado: 15-20 minutos$(NC)"
 	@echo "$(YELLOW)💡 Você será questionado sobre melhorias desejadas$(NC)"
-	@echo "$(CYAN)🤖 Executando: @pm *create-doc brownfield-prd$(NC)"
-	@gemini -p "$(AGENT_PREFIX) @pm *create-doc brownfield-prd" || \
+	@echo "$(CYAN)🤖 Iniciando sessão interativa com: @pm *create-doc brownfield-prd$(NC)"
+	@echo "$(YELLOW)💡 O Gemini CLI será aberto em modo interativo$(NC)"
+	@echo "$(YELLOW)💡 Digite '/exit' ou '/quit' quando terminar$(NC)"
+	@echo "$(CYAN)Comando que será executado automaticamente:$(NC)"
+	@echo "$(AGENT_PREFIX) @pm *create-doc brownfield-prd"
+	@echo ""
+	@echo "$(AGENT_PREFIX) @pm *create-doc brownfield-prd" | gemini $(MODEL_FLAG) || \
 		(echo "$(RED)❌ Erro na criação do PRD$(NC)" && exit 1)
 	@echo "$(GREEN)✅ PRD para brownfield criado!$(NC)"
 	@echo "$(BLUE)📄 Documento gerado: docs/prd.md$(NC)"
@@ -265,8 +276,13 @@ plan-arch: ## 🏗️ Criar arquitetura para brownfield
 	@echo "$(CYAN)🏗️  Criando arquitetura para projeto brownfield...$(NC)"
 	@echo "$(YELLOW)⏱️  Tempo estimado: 20-30 minutos$(NC)"
 	@echo "$(YELLOW)💡 Você será questionado sobre arquitetura atual$(NC)"
-	@echo "$(CYAN)🤖 Executando: @architect *create-doc brownfield-architecture$(NC)"
-	@gemini -p "$(AGENT_PREFIX) @architect *create-doc brownfield-architecture" || \
+	@echo "$(CYAN)🤖 Iniciando sessão interativa com: @architect *create-doc brownfield-architecture$(NC)"
+	@echo "$(YELLOW)💡 O Gemini CLI será aberto em modo interativo$(NC)"
+	@echo "$(YELLOW)💡 Digite '/exit' ou '/quit' quando terminar$(NC)"
+	@echo "$(CYAN)Comando que será executado automaticamente:$(NC)"
+	@echo "$(AGENT_PREFIX) @architect *create-doc brownfield-architecture"
+	@echo ""
+	@echo "$(AGENT_PREFIX) @architect *create-doc brownfield-architecture" | gemini $(MODEL_FLAG) || \
 		(echo "$(RED)❌ Erro na criação da arquitetura$(NC)" && exit 1)
 	@echo "$(GREEN)✅ Arquitetura para brownfield criada!$(NC)"
 	@echo "$(BLUE)📄 Documento gerado: docs/architecture.md$(NC)"
@@ -275,8 +291,13 @@ validate: ## ✅ Executar checklist de validação
 	@echo "$(GREEN)✅ Executando checklist de validação...$(NC)"
 	@echo "$(YELLOW)⏱️  Tempo estimado: 10-15 minutos$(NC)"
 	@echo "$(YELLOW)💡 Revise cada item apresentado cuidadosamente$(NC)"
-	@echo "$(CYAN)🤖 Executando: @po *execute-checklist po-master-checklist$(NC)"
-	@gemini -p "$(AGENT_PREFIX) @po *execute-checklist po-master-checklist" || \
+	@echo "$(CYAN)🤖 Iniciando sessão interativa com: @po *execute-checklist po-master-checklist$(NC)"
+	@echo "$(YELLOW)💡 O Gemini CLI será aberto em modo interativo$(NC)"
+	@echo "$(YELLOW)💡 Digite '/exit' ou '/quit' quando terminar$(NC)"
+	@echo "$(CYAN)Comando que será executado automaticamente:$(NC)"
+	@echo "$(AGENT_PREFIX) @po *execute-checklist po-master-checklist"
+	@echo ""
+	@echo "$(AGENT_PREFIX) @po *execute-checklist po-master-checklist" | gemini $(MODEL_FLAG) || \
 		(echo "$(RED)❌ Erro na validação$(NC)" && exit 1)
 	@echo "$(GREEN)✅ Validação concluída!$(NC)"
 
@@ -285,16 +306,26 @@ validate: ## ✅ Executar checklist de validação
 create-epic: ## 📝 Criar épico para brownfield
 	@echo "$(PURPLE)📝 Criando épico para projeto brownfield...$(NC)"
 	@echo "$(YELLOW)💡 Você definirá nome, objetivo e critérios de sucesso$(NC)"
-	@echo "$(CYAN)🤖 Executando: @pm *brownfield-create-epic$(NC)"
-	@gemini -p "$(AGENT_PREFIX) @pm *brownfield-create-epic" || \
+	@echo "$(CYAN)🤖 Iniciando sessão interativa com: @pm *brownfield-create-epic$(NC)"
+	@echo "$(YELLOW)💡 O Gemini CLI será aberto em modo interativo$(NC)"
+	@echo "$(YELLOW)💡 Digite '/exit' ou '/quit' quando terminar$(NC)"
+	@echo "$(CYAN)Comando que será executado automaticamente:$(NC)"
+	@echo "$(AGENT_PREFIX) @pm *brownfield-create-epic"
+	@echo ""
+	@echo "$(AGENT_PREFIX) @pm *brownfield-create-epic" | gemini $(MODEL_FLAG) || \
 		(echo "$(RED)❌ Erro na criação do épico$(NC)" && exit 1)
 	@echo "$(GREEN)✅ Épico criado com sucesso!$(NC)"
 
 create-stories: ## 📖 Criar histórias de usuário detalhadas
 	@echo "$(BLUE)📖 Criando histórias de usuário...$(NC)"
 	@echo "$(YELLOW)💡 Execute múltiplas vezes para criar várias histórias$(NC)"
-	@echo "$(CYAN)🤖 Executando: @sm create-next-story$(NC)"
-	@gemini -p "$(AGENT_PREFIX) @sm create-next-story" || \
+	@echo "$(CYAN)🤖 Iniciando sessão interativa com: @sm create-next-story$(NC)"
+	@echo "$(YELLOW)💡 O Gemini CLI será aberto em modo interativo$(NC)"
+	@echo "$(YELLOW)💡 Digite '/exit' ou '/quit' quando terminar$(NC)"
+	@echo "$(CYAN)Comando que será executado automaticamente:$(NC)"
+	@echo "$(AGENT_PREFIX) @sm create-next-story"
+	@echo ""
+	@echo "$(AGENT_PREFIX) @sm create-next-story" | gemini $(MODEL_FLAG) || \
 		(echo "$(RED)❌ Erro na criação da história$(NC)" && exit 1)
 	@echo "$(GREEN)✅ História criada!$(NC)"
 	@echo "$(BLUE)💡 Para criar mais histórias, execute: make create-stories$(NC)"
@@ -304,44 +335,49 @@ create-stories: ## 📖 Criar histórias de usuário detalhadas
 implement-story: ## 💻 Implementar história específica
 	@echo "$(GREEN)💻 Implementando história $(STORY_NUMBER)...$(NC)"
 	@echo "$(YELLOW)💡 Use STORY_NUMBER=X.Y para especificar a história$(NC)"
-	@echo "$(CYAN)🤖 Executando: @dev implement story $(STORY_NUMBER)$(NC)"
-	@gemini -p "$(AGENT_PREFIX) @dev implement story $(STORY_NUMBER)" || \
+	@echo "$(CYAN)🤖 Iniciando sessão interativa com: @dev implement story $(STORY_NUMBER)$(NC)"
+	@echo "$(YELLOW)💡 O Gemini CLI será aberto em modo interativo$(NC)"
+	@echo "$(YELLOW)💡 Digite '/exit' ou '/quit' quando terminar$(NC)"
+	@echo "$(CYAN)Comando que será executado automaticamente:$(NC)"
+	@echo "$(AGENT_PREFIX) @dev implement story $(STORY_NUMBER)"
+	@echo ""
+	@echo "$(AGENT_PREFIX) @dev implement story $(STORY_NUMBER)" | gemini $(MODEL_FLAG) || \
 		(echo "$(RED)❌ Erro na implementação da história$(NC)" && exit 1)
 	@echo "$(GREEN)✅ História $(STORY_NUMBER) implementada!$(NC)"
 
 refactor: ## 🔧 Refatorar código existente
 	@echo "$(YELLOW)🔧 Iniciando processo de refatoração...$(NC)"
 	@echo "$(BLUE)📊 Passo 1: Analisando projeto atual...$(NC)"
-	@gemini $(MODEL_FLAG) -p "$(AGENT_PREFIX) @analyst *document-project"
+	@echo "$(AGENT_PREFIX) @analyst *document-project" | gemini $(MODEL_FLAG)
 	@echo "$(BLUE)🏗️  Passo 2: Revisando arquitetura...$(NC)"
-	@gemini -p "$(AGENT_PREFIX) @architect *review-architecture"
+	@echo "$(AGENT_PREFIX) @architect *review-architecture" | gemini $(MODEL_FLAG)
 	@echo "$(BLUE)📋 Passo 3: Planejando refatoração...$(NC)"
-	@gemini -p "$(AGENT_PREFIX) @pm *create-doc brownfield-prd"
+	@echo "$(AGENT_PREFIX) @pm *create-doc brownfield-prd" | gemini $(MODEL_FLAG)
 	@echo "$(GREEN)✅ Análise de refatoração concluída!$(NC)"
 	@echo "$(YELLOW)💡 Próximo passo: Especifique o componente a refatorar$(NC)"
-	@echo "$(CYAN)💡 Exemplo: gemini -p '$(AGENT_PREFIX) @dev refactor [nome-do-componente]'$(NC)"
+	@echo "$(CYAN)💡 Exemplo: echo '$(AGENT_PREFIX) @dev refactor [nome-do-componente]' | gemini$(NC)"
 
 fix-bug: ## 🐛 Processo para corrigir bug complexo
 	@echo "$(RED)🐛 Iniciando processo de correção de bug...$(NC)"
 	@echo "$(BLUE)📊 Passo 1: Analisando problema...$(NC)"
-	@gemini -p "$(AGENT_PREFIX) @analyst *document-project"
+	@echo "$(AGENT_PREFIX) @analyst *document-project" | gemini $(MODEL_FLAG)
 	@echo "$(GREEN)✅ Análise inicial concluída!$(NC)"
-	@echo "$(YELLOW)💡 Próximos passos manuais:$(NC)"
-	@echo "$(CYAN)  1. gemini -p '$(AGENT_PREFIX) @dev analyze bug [descrição-do-bug]'$(NC)"
-	@echo "$(CYAN)  2. gemini -p '$(AGENT_PREFIX) @architect *design-fix [bug]'$(NC)"
-	@echo "$(CYAN)  3. gemini -p '$(AGENT_PREFIX) @dev fix [bug]'$(NC)"
-	@echo "$(CYAN)  4. gemini -p '$(AGENT_PREFIX) @qa validate [correção]'$(NC)"
+	@echo "$(YELLOW)💡 Próximos passos manuais (modo interativo):$(NC)"
+	@echo "$(CYAN)  1. echo '$(AGENT_PREFIX) @dev analyze bug [descrição-do-bug]' | gemini$(NC)"
+	@echo "$(CYAN)  2. echo '$(AGENT_PREFIX) @architect *design-fix [bug]' | gemini$(NC)"
+	@echo "$(CYAN)  3. echo '$(AGENT_PREFIX) @dev fix [bug]' | gemini$(NC)"
+	@echo "$(CYAN)  4. echo '$(AGENT_PREFIX) @qa validate [correção]' | gemini$(NC)"
 
 migrate: ## 🔄 Processo de migração de tecnologia
 	@echo "$(PURPLE)🔄 Iniciando processo de migração...$(NC)"
 	@echo "$(BLUE)📊 Passo 1: Documentando estado atual...$(NC)"
-	@gemini -p "$(AGENT_PREFIX) @analyst *document-project"
+	@echo "$(AGENT_PREFIX) @analyst *document-project" | gemini $(MODEL_FLAG)
 	@echo "$(GREEN)✅ Documentação inicial concluída!$(NC)"
-	@echo "$(YELLOW)💡 Próximos passos manuais:$(NC)"
-	@echo "$(CYAN)  1. gemini -p '$(AGENT_PREFIX) @architect *create-doc migration-architecture'$(NC)"
-	@echo "$(CYAN)  2. gemini -p '$(AGENT_PREFIX) @pm *create-migration-roadmap'$(NC)"
-	@echo "$(CYAN)  3. gemini -p '$(AGENT_PREFIX) @po *execute-checklist migration-checklist'$(NC)"
-	@echo "$(CYAN)  4. gemini -p '$(AGENT_PREFIX) @dev implement migration-phase [número]'$(NC)"
+	@echo "$(YELLOW)💡 Próximos passos manuais (modo interativo):$(NC)"
+	@echo "$(CYAN)  1. echo '$(AGENT_PREFIX) @architect *create-doc migration-architecture' | gemini$(NC)"
+	@echo "$(CYAN)  2. echo '$(AGENT_PREFIX) @pm *create-migration-roadmap' | gemini$(NC)"
+	@echo "$(CYAN)  3. echo '$(AGENT_PREFIX) @po *execute-checklist migration-checklist' | gemini$(NC)"
+	@echo "$(CYAN)  4. echo '$(AGENT_PREFIX) @dev implement migration-phase [número]' | gemini$(NC)"
 
 ##@ Utilitários
 
@@ -407,26 +443,57 @@ dev-help: ## 🛠️ Comandos úteis para desenvolvimento
 	@echo "  $(GREEN)gemini -p '/stats'$(NC)         - Estatísticas de uso"
 	@echo "  $(GREEN)gemini -p '/about'$(NC)         - Informações da versão"
 	@echo ""
-	@echo "$(YELLOW)📁 Arquivos (com instrução de idioma):$(NC)"
-	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @arquivo.txt Analise este arquivo'$(NC)"
-	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @src/ Revise este código'$(NC)"
+	@echo "$(YELLOW)📁 Arquivos (modo interativo):$(NC)"
+	@echo "  $(GREEN)echo '$(LANG_INSTRUCTION) @arquivo.txt Analise este arquivo' | gemini$(NC)"
+	@echo "  $(GREEN)echo '$(LANG_INSTRUCTION) @src/ Revise este código' | gemini$(NC)"
 	@echo ""
-	@echo "$(YELLOW)🔧 Shell:$(NC)"
-	@echo "  $(GREEN)gemini -p '!ls -la'$(NC)        - Executar comando shell"
-	@echo "  $(GREEN)gemini -p '!git status'$(NC)    - Status do git"
+	@echo "$(YELLOW)🔧 Shell (dentro do Gemini CLI interativo):$(NC)"
+	@echo "  $(GREEN)!ls -la$(NC)        - Executar comando shell"
+	@echo "  $(GREEN)!git status$(NC)    - Status do git"
 	@echo ""
-	@echo "$(YELLOW)🎨 Configuração:$(NC)"
-	@echo "  $(GREEN)gemini -p '/theme'$(NC)         - Alterar tema"
-	@echo "  $(GREEN)gemini -p '/memory show'$(NC)   - Mostrar contexto"
+	@echo "$(YELLOW)🎨 Configuração (dentro do Gemini CLI interativo):$(NC)"
+	@echo "  $(GREEN)/theme$(NC)         - Alterar tema"
+	@echo "  $(GREEN)/memory show$(NC)   - Mostrar contexto"
+	@echo "  $(GREEN)/help$(NC)          - Ajuda completa"
+	@echo "  $(GREEN)/exit$(NC)          - Sair do modo interativo"
 	@echo ""
-	@echo "$(YELLOW)🤖 Agentes BMAD (todos em português):$(NC)"
-	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @analyst [comando]'$(NC)"
-	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @pm [comando]'$(NC)"
-	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @architect [comando]'$(NC)"
-	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @dev [comando]'$(NC)"
-	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @sm [comando]'$(NC)"
-	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @po [comando]'$(NC)"
-	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @qa [comando]'$(NC)"
+	@echo "$(YELLOW)🤖 Agentes BMAD (modo interativo):$(NC)"
+	@echo "  $(GREEN)echo '$(LANG_INSTRUCTION) @analyst [comando]' | gemini$(NC)"
+	@echo "  $(GREEN)echo '$(LANG_INSTRUCTION) @pm [comando]' | gemini$(NC)"
+	@echo "  $(GREEN)echo '$(LANG_INSTRUCTION) @architect [comando]' | gemini$(NC)"
+	@echo "  $(GREEN)echo '$(LANG_INSTRUCTION) @dev [comando]' | gemini$(NC)"
+	@echo "  $(GREEN)echo '$(LANG_INSTRUCTION) @sm [comando]' | gemini$(NC)"
+	@echo "  $(GREEN)echo '$(LANG_INSTRUCTION) @po [comando]' | gemini$(NC)"
+	@echo "  $(GREEN)echo '$(LANG_INSTRUCTION) @qa [comando]' | gemini$(NC)"
+	@echo ""
+	@echo "$(YELLOW)💡 Modo Totalmente Interativo:$(NC)"
+	@echo "  $(GREEN)gemini$(NC)                    - Abrir CLI interativo"
+	@echo "  $(GREEN)gemini $(MODEL_FLAG)$(NC)      - Abrir com modelo específico"
+
+interactive: ## 🎯 Abrir Gemini CLI em modo totalmente interativo
+	@echo "$(CYAN)🤖 Abrindo Gemini CLI em modo totalmente interativo...$(NC)"
+	@echo "$(BLUE)Modelo: $(GEMINI_MODEL)$(NC)"
+	@echo "$(YELLOW)💡 Comandos úteis dentro do CLI:$(NC)"
+	@echo "  $(GREEN)/help$(NC)          - Ajuda completa"
+	@echo "  $(GREEN)/tools$(NC)         - Ver ferramentas disponíveis"
+	@echo "  $(GREEN)/mcp$(NC)           - Ver servidores MCP"
+	@echo "  $(GREEN)/stats$(NC)         - Estatísticas de uso"
+	@echo "  $(GREEN)/exit$(NC)          - Sair"
+	@echo ""
+	@echo "$(YELLOW)💡 Agentes BMAD disponíveis:$(NC)"
+	@echo "  $(GREEN)@analyst$(NC)       - Análise de projetos"
+	@echo "  $(GREEN)@pm$(NC)            - Product Manager"
+	@echo "  $(GREEN)@architect$(NC)     - Arquiteto de software"
+	@echo "  $(GREEN)@dev$(NC)           - Desenvolvedor"
+	@echo "  $(GREEN)@sm$(NC)            - Scrum Master"
+	@echo "  $(GREEN)@po$(NC)            - Product Owner"
+	@echo "  $(GREEN)@qa$(NC)            - Quality Assurance"
+	@echo ""
+	@echo "$(YELLOW)💡 Exemplo de uso:$(NC)"
+	@echo "  $(CYAN)$(AGENT_PREFIX) @analyst *document-project$(NC)"
+	@echo ""
+	@echo "$(GREEN)🚀 Iniciando sessão interativa...$(NC)"
+	@gemini $(MODEL_FLAG)
 
 manual-command: ## 🎯 Executar comando manual com agente específico (uso: make manual-command AGENT=analyst COMMAND="*document-project")
 	@if [ -z "$(AGENT)" ] || [ -z "$(COMMAND)" ]; then \
@@ -438,7 +505,10 @@ manual-command: ## 🎯 Executar comando manual com agente específico (uso: mak
 	@echo "$(CYAN)🤖 Executando comando manual em português (modelo: $(GEMINI_MODEL))...$(NC)"
 	@echo "$(BLUE)Agente: @$(AGENT)$(NC)"
 	@echo "$(BLUE)Comando: $(COMMAND)$(NC)"
-	@gemini $(MODEL_FLAG) -p "$(AGENT_PREFIX) @$(AGENT) $(COMMAND)"
+	@echo "$(YELLOW)💡 O Gemini CLI será aberto em modo interativo$(NC)"
+	@echo "$(YELLOW)💡 Digite '/exit' ou '/quit' quando terminar$(NC)"
+	@echo ""
+	@echo "$(AGENT_PREFIX) @$(AGENT) $(COMMAND)" | gemini $(MODEL_FLAG)
 
 # Validações internas
 _check_oauth:
