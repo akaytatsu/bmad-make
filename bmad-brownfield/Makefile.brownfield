@@ -10,6 +10,7 @@
 GEMINI_CLI_VERSION := latest
 PROJECT_NAME := $(shell basename $(PWD))
 STORY_NUMBER ?= 1.1
+MAKEFLAGS += -f Makefile.brownfield
 
 # Cores para output
 RED := \033[0;31m
