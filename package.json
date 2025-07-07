@@ -41,6 +41,7 @@
     "files": [
         "bin/",
         "bmad-brownfield/",
+        "bmad-greenfield/",
         "README.md"
     ]
 }
