@@ -44,7 +44,8 @@ help: ## 📋 Exibir esta mensagem de ajuda
 	@echo "  $(GREEN)make setup-oauth$(NC)      - Configurar autenticação OAuth"
 	@echo "  $(GREEN)make check-deps$(NC)       - Verificar dependências instaladas"
 	@echo "  $(GREEN)make test-connection$(NC)  - Testar conexão com Gemini API"
-	@echo "  $(GREEN)make set-model$(NC)        - Configurar modelo Gemini (flash/pro)"
+	@echo "  $(GREEN)make set-model$(NC)        - Escolher modelo Gemini interativamente"
+	@echo "  $(GREEN)make change-model$(NC)     - Alterar modelo rapidamente"
 	@echo ""
 	@echo "$(YELLOW)🚀 FLUXO COMPLETO (RECOMENDADO):$(NC)"
 	@echo "  $(GREEN)make full-setup$(NC)       - Instalação completa + configuração"
@@ -73,6 +74,7 @@ help: ## 📋 Exibir esta mensagem de ajuda
 	@echo "  $(GREEN)make manual-command$(NC)   - Executar comando manual com agente específico"
 	@echo "  $(GREEN)make dev-help$(NC)         - Comandos úteis para desenvolvimento"
 	@echo "  $(GREEN)make quota-help$(NC)       - Ajuda para problemas de quota"
+	@echo "  $(GREEN)make set-model$(NC)        - Escolher modelo interativamente"
 	@echo ""
 	@echo "$(YELLOW)📖 EXEMPLOS DE USO:$(NC)"
 	@echo "  $(CYAN)make install$(NC)                    # Primeira instalação"
@@ -92,7 +94,8 @@ help: ## 📋 Exibir esta mensagem de ajuda
 	@echo "$(YELLOW)🤖 MODELO GEMINI:$(NC)"
 	@echo "  - Padrão: $(GEMINI_MODEL) (evita quota exceeded)"
 	@echo "  - Para usar Pro: GEMINI_MODEL=gemini-2.5-pro make comando"
-	@echo "  - Use 'make set-model' para configurar permanentemente"
+	@echo "  - Use 'make set-model' para escolher interativamente"
+	@echo "  - Use 'make change-model' para alterar rapidamente"
 	@echo ""
 
 ##@ Instalação e Configuração
@@ -156,21 +159,42 @@ test-connection: ## 🧪 Testar conexão com Gemini API
 		 echo "$(YELLOW)💡 Tente: make test-connection GEMINI_MODEL=gemini-2.5-flash$(NC)" && exit 1)
 	@echo "$(GREEN)✅ Conexão com Gemini API funcionando com $(GEMINI_MODEL)!$(NC)"
 
-set-model: ## 🤖 Configurar modelo Gemini (flash para evitar quota, pro para melhor qualidade)
+set-model: ## 🤖 Configurar modelo Gemini interativamente
 	@echo "$(CYAN)🤖 Configuração de Modelo Gemini:$(NC)"
-	@echo ""
-	@echo "$(YELLOW)Modelos disponíveis:$(NC)"
-	@echo "  $(GREEN)1. gemini-2.5-flash$(NC)  - Rápido, menos quota (RECOMENDADO)"
-	@echo "  $(GREEN)2. gemini-2.5-pro$(NC)    - Melhor qualidade, mais quota"
 	@echo ""
 	@echo "$(BLUE)Modelo atual: $(GEMINI_MODEL)$(NC)"
 	@echo ""
-	@echo "$(YELLOW)Para alterar temporariamente:$(NC)"
-	@echo "  $(CYAN)GEMINI_MODEL=gemini-2.5-flash make analyze$(NC)"
-	@echo "  $(CYAN)GEMINI_MODEL=gemini-2.5-pro make plan-prd$(NC)"
+	@echo "$(YELLOW)Escolha o modelo:$(NC)"
+	@echo "  $(GREEN)1)$(NC) gemini-2.5-flash  - Rápido, menos quota (RECOMENDADO)"
+	@echo "  $(GREEN)2)$(NC) gemini-2.5-pro    - Melhor qualidade, mais quota"
+	@echo "  $(GREEN)3)$(NC) Cancelar"
 	@echo ""
-	@echo "$(YELLOW)Para alterar permanentemente, edite o Makefile:$(NC)"
-	@echo "  $(CYAN)GEMINI_MODEL ?= gemini-2.5-flash$(NC)"
+	@printf "$(CYAN)Digite sua escolha (1-3): $(NC)"; \
+	read choice; \
+	case $$choice in \
+		1) \
+			echo "$(GREEN)✅ Configurando gemini-2.5-flash...$(NC)"; \
+			sed -i 's/GEMINI_MODEL ?= .*/GEMINI_MODEL ?= gemini-2.5-flash/' bmad-brownfield/Makefile.brownfield; \
+			echo "$(GREEN)✅ Modelo alterado para gemini-2.5-flash!$(NC)"; \
+			echo "$(BLUE)💡 Reinicie os comandos para aplicar a mudança$(NC)"; \
+			;; \
+		2) \
+			echo "$(YELLOW)⚠️  Configurando gemini-2.5-pro...$(NC)"; \
+			echo "$(RED)⚠️  ATENÇÃO: Este modelo pode causar quota exceeded!$(NC)"; \
+			sed -i 's/GEMINI_MODEL ?= .*/GEMINI_MODEL ?= gemini-2.5-pro/' bmad-brownfield/Makefile.brownfield; \
+			echo "$(GREEN)✅ Modelo alterado para gemini-2.5-pro!$(NC)"; \
+			echo "$(BLUE)💡 Reinicie os comandos para aplicar a mudança$(NC)"; \
+			;; \
+		3) \
+			echo "$(YELLOW)❌ Operação cancelada$(NC)"; \
+			;; \
+		*) \
+			echo "$(RED)❌ Opção inválida. Use 1, 2 ou 3$(NC)"; \
+			;; \
+	esac
+
+change-model: ## 🔄 Alterar modelo rapidamente (alias para set-model)
+	@$(MAKE) -f Makefile.brownfield set-model
 
 quota-help: ## 🚨 Ajuda para resolver problemas de quota
 	@echo "$(RED)🚨 Problemas de Quota Gemini$(NC)"
