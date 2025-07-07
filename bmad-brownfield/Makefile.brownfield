@@ -12,6 +12,10 @@ PROJECT_NAME := $(shell basename $(PWD))
 STORY_NUMBER ?= 1.1
 MAKEFLAGS += -f Makefile.brownfield
 
+# Configuração de modelo Gemini (para evitar quota exceeded)
+GEMINI_MODEL ?= gemini-2.5-flash
+MODEL_FLAG := --model $(GEMINI_MODEL)
+
 # Configuração de idioma para todos os agentes
 LANG_INSTRUCTION := "IMPORTANTE: Responda sempre em português do Brasil (pt-BR). Todos os documentos, códigos, comentários e explicações devem estar em português brasileiro. Use terminologia técnica em português quando possível."
 AGENT_PREFIX := $(LANG_INSTRUCTION)
@@ -40,6 +44,7 @@ help: ## 📋 Exibir esta mensagem de ajuda
 	@echo "  $(GREEN)make setup-oauth$(NC)      - Configurar autenticação OAuth"
 	@echo "  $(GREEN)make check-deps$(NC)       - Verificar dependências instaladas"
 	@echo "  $(GREEN)make test-connection$(NC)  - Testar conexão com Gemini API"
+	@echo "  $(GREEN)make set-model$(NC)        - Configurar modelo Gemini (flash/pro)"
 	@echo ""
 	@echo "$(YELLOW)🚀 FLUXO COMPLETO (RECOMENDADO):$(NC)"
 	@echo "  $(GREEN)make full-setup$(NC)       - Instalação completa + configuração"
@@ -67,6 +72,7 @@ help: ## 📋 Exibir esta mensagem de ajuda
 	@echo "  $(GREEN)make configure-language$(NC) - Configurar idioma português brasileiro"
 	@echo "  $(GREEN)make manual-command$(NC)   - Executar comando manual com agente específico"
 	@echo "  $(GREEN)make dev-help$(NC)         - Comandos úteis para desenvolvimento"
+	@echo "  $(GREEN)make quota-help$(NC)       - Ajuda para problemas de quota"
 	@echo ""
 	@echo "$(YELLOW)📖 EXEMPLOS DE USO:$(NC)"
 	@echo "  $(CYAN)make install$(NC)                    # Primeira instalação"
@@ -82,6 +88,11 @@ help: ## 📋 Exibir esta mensagem de ajuda
 	@echo "  - Todos os agentes respondem em português brasileiro"
 	@echo "  - Documentos e códigos gerados em português"
 	@echo "  - Use 'make configure-language' para ver configurações"
+	@echo ""
+	@echo "$(YELLOW)🤖 MODELO GEMINI:$(NC)"
+	@echo "  - Padrão: $(GEMINI_MODEL) (evita quota exceeded)"
+	@echo "  - Para usar Pro: GEMINI_MODEL=gemini-2.5-pro make comando"
+	@echo "  - Use 'make set-model' para configurar permanentemente"
 	@echo ""
 
 ##@ Instalação e Configuração
@@ -139,10 +150,47 @@ check-deps: ## ✅ Verificar se todas as dependências estão instaladas
 	@echo "$(GREEN)✅ Todas as dependências estão OK!$(NC)"
 
 test-connection: ## 🧪 Testar conexão com Gemini API
-	@echo "$(BLUE)🔗 Testando conexão com Gemini API...$(NC)"
-	@gemini -p "Hello, this is a connection test. Please respond with 'Connection successful!'" || \
-		(echo "$(RED)❌ Falha na conexão com Gemini API$(NC)" && exit 1)
-	@echo "$(GREEN)✅ Conexão com Gemini API funcionando!$(NC)"
+	@echo "$(BLUE)🔗 Testando conexão com Gemini API usando $(GEMINI_MODEL)...$(NC)"
+	@gemini $(MODEL_FLAG) -p "Hello, this is a connection test. Please respond with 'Connection successful!'" || \
+		(echo "$(RED)❌ Falha na conexão com Gemini API$(NC)" && \
+		 echo "$(YELLOW)💡 Tente: make test-connection GEMINI_MODEL=gemini-2.5-flash$(NC)" && exit 1)
+	@echo "$(GREEN)✅ Conexão com Gemini API funcionando com $(GEMINI_MODEL)!$(NC)"
+
+set-model: ## 🤖 Configurar modelo Gemini (flash para evitar quota, pro para melhor qualidade)
+	@echo "$(CYAN)🤖 Configuração de Modelo Gemini:$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Modelos disponíveis:$(NC)"
+	@echo "  $(GREEN)1. gemini-2.5-flash$(NC)  - Rápido, menos quota (RECOMENDADO)"
+	@echo "  $(GREEN)2. gemini-2.5-pro$(NC)    - Melhor qualidade, mais quota"
+	@echo ""
+	@echo "$(BLUE)Modelo atual: $(GEMINI_MODEL)$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Para alterar temporariamente:$(NC)"
+	@echo "  $(CYAN)GEMINI_MODEL=gemini-2.5-flash make analyze$(NC)"
+	@echo "  $(CYAN)GEMINI_MODEL=gemini-2.5-pro make plan-prd$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Para alterar permanentemente, edite o Makefile:$(NC)"
+	@echo "  $(CYAN)GEMINI_MODEL ?= gemini-2.5-flash$(NC)"
+
+quota-help: ## 🚨 Ajuda para resolver problemas de quota
+	@echo "$(RED)🚨 Problemas de Quota Gemini$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Erro 429 - Quota Exceeded:$(NC)"
+	@echo "  - Você atingiu o limite diário do Gemini 2.5 Pro"
+	@echo "  - Solução: Use o modelo Flash (mais rápido, menos quota)"
+	@echo ""
+	@echo "$(GREEN)✅ Soluções Imediatas:$(NC)"
+	@echo "  $(CYAN)1. make analyze GEMINI_MODEL=gemini-2.5-flash$(NC)"
+	@echo "  $(CYAN)2. export GEMINI_MODEL=gemini-2.5-flash$(NC)"
+	@echo "  $(CYAN)3. Editar Makefile: GEMINI_MODEL ?= gemini-2.5-flash$(NC)"
+	@echo ""
+	@echo "$(BLUE)💡 Dicas:$(NC)"
+	@echo "  - Flash: Rápido, adequado para a maioria das tarefas"
+	@echo "  - Pro: Melhor para tarefas complexas (quando quota permitir)"
+	@echo "  - Quota reseta diariamente"
+	@echo ""
+	@echo "$(YELLOW)⚡ Teste rápido:$(NC)"
+	@echo "  $(CYAN)make test-connection GEMINI_MODEL=gemini-2.5-flash$(NC)"
 
 ##@ Fluxos Completos
 
@@ -240,7 +288,7 @@ implement-story: ## 💻 Implementar história específica
 refactor: ## 🔧 Refatorar código existente
 	@echo "$(YELLOW)🔧 Iniciando processo de refatoração...$(NC)"
 	@echo "$(BLUE)📊 Passo 1: Analisando projeto atual...$(NC)"
-	@gemini -p "$(AGENT_PREFIX) @analyst *document-project"
+	@gemini $(MODEL_FLAG) -p "$(AGENT_PREFIX) @analyst *document-project"
 	@echo "$(BLUE)🏗️  Passo 2: Revisando arquitetura...$(NC)"
 	@gemini -p "$(AGENT_PREFIX) @architect *review-architecture"
 	@echo "$(BLUE)📋 Passo 3: Planejando refatoração...$(NC)"
@@ -363,10 +411,10 @@ manual-command: ## 🎯 Executar comando manual com agente específico (uso: mak
 		echo "$(YELLOW)💡 Agentes disponíveis: analyst, pm, architect, dev, sm, po, qa$(NC)"; \
 		exit 1; \
 	fi
-	@echo "$(CYAN)🤖 Executando comando manual em português...$(NC)"
+	@echo "$(CYAN)🤖 Executando comando manual em português (modelo: $(GEMINI_MODEL))...$(NC)"
 	@echo "$(BLUE)Agente: @$(AGENT)$(NC)"
 	@echo "$(BLUE)Comando: $(COMMAND)$(NC)"
-	@gemini -p "$(AGENT_PREFIX) @$(AGENT) $(COMMAND)"
+	@gemini $(MODEL_FLAG) -p "$(AGENT_PREFIX) @$(AGENT) $(COMMAND)"
 
 # Validações internas
 _check_oauth:
