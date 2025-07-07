@@ -17,8 +17,8 @@ GEMINI_MODEL ?= gemini-2.5-flash
 MODEL_FLAG := --model $(GEMINI_MODEL)
 
 # Configuração de idioma para todos os agentes
-LANG_INSTRUCTION := "IMPORTANTE: Responda sempre em português do Brasil (pt-BR). Todos os documentos, códigos, comentários e explicações devem estar em português brasileiro. Use terminologia técnica em português quando possível."
-AGENT_PREFIX := $(LANG_INSTRUCTION)
+LANG_INSTRUCTION := "IMPORTANTE: Responda sempre em português do Brasil pt-BR. Todos os documentos, códigos, comentários e explicações devem estar em português brasileiro. Use terminologia técnica em português quando possível."
+AGENT_PREFIX := "Responda em português brasileiro."
 
 # Cores para output
 RED := \033[0;31m
@@ -246,7 +246,7 @@ analyze: ## 📊 Documentar estado atual do projeto
 	@echo "$(BLUE)📊 Analisando estado atual do projeto '$(PROJECT_NAME)'...$(NC)"
 	@echo "$(YELLOW)⏱️  Tempo estimado: 5-10 minutos$(NC)"
 	@echo "$(CYAN)🤖 Executando: @analyst *document-project$(NC)"
-	@gemini -p "$(AGENT_PREFIX) @analyst *document-project" || \
+	@gemini -p '$(AGENT_PREFIX) @analyst *document-project' || \
 		(echo "$(RED)❌ Erro na análise do projeto$(NC)" && exit 1)
 	@echo "$(GREEN)✅ Análise do projeto concluída!$(NC)"
 	@echo "$(BLUE)📄 Documentos gerados: docs/project-analysis.md$(NC)"
