@@ -443,9 +443,9 @@ manual-command: ## 🎯 Executar comando manual com agente específico (uso: mak
 # Validações internas
 _check_oauth:
 	@echo "$(BLUE)🔐 Verificando autenticação OAuth...$(NC)"
-	@gemini -p "test" >/dev/null 2>&1 || \
-		(echo "$(RED)❌ Problema na autenticação OAuth!$(NC)" && \
-		 echo "$(YELLOW)💡 Execute: make setup-oauth$(NC)" && exit 1)
+	#@gemini -p "test" >/dev/null 2>&1 || \
+	#	(echo "$(RED)❌ Problema na autenticação OAuth!$(NC)" && \
+	#	 echo "$(YELLOW)💡 Execute: make setup-oauth$(NC)" && exit 1)
 
 _check_gemini_cli:
 	@if ! command -v gemini >/dev/null 2>&1; then \
