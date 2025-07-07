@@ -456,7 +456,7 @@ create-stories: ## 📖 Criar histórias de usuário detalhadas
 	@echo ""
 	@echo "$(YELLOW)3. Dentro do Gemini CLI, digite:$(NC)"
 	@echo ""
-	@echo "$(CYAN)$(AGENT_PREFIX) @sm create-next-story$(NC)"
+	@echo "$(CYAN)$(AGENT_PREFIX) @sm *create-next-story$(NC)"
 	@echo ""
 	@echo "$(YELLOW)4. Quando terminar, digite '/exit' para sair$(NC)"
 	@echo ""
