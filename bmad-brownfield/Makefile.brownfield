@@ -89,15 +89,9 @@ setup-gemini: ## 🤖 Instalar e configurar Gemini CLI
 	else \
 		echo "$(GREEN)✅ Gemini CLI já está instalado$(NC)"; \
 	fi
-	@echo "$(BLUE)🔑 Verificando configuração da API Key...$(NC)"
-	@if [ -z "$$GEMINI_API_KEY" ]; then \
-		echo "$(RED)❌ GEMINI_API_KEY não está configurada!$(NC)"; \
-		echo "$(YELLOW)💡 Configure com: export GEMINI_API_KEY='sua_api_key'$(NC)"; \
-		echo "$(YELLOW)💡 Para tornar permanente: echo 'export GEMINI_API_KEY=\"sua_key\"' >> ~/.bashrc$(NC)"; \
-		exit 1; \
-	else \
-		echo "$(GREEN)✅ GEMINI_API_KEY configurada$(NC)"; \
-	fi
+	@echo "$(BLUE)🔑 Configurando autenticação OAuth...$(NC)"
+	@echo "$(YELLOW)💡 O Gemini CLI usa autenticação OAuth (sem necessidade de API Key)$(NC)"
+	@echo "$(YELLOW)💡 Se necessário, execute: gemini -p '/auth' para configurar$(NC)"
 	@echo "$(BLUE)🧪 Testando instalação do Gemini CLI...$(NC)"
 	@gemini --version || (echo "$(RED)❌ Erro na instalação do Gemini CLI$(NC)" && exit 1)
 	@echo "$(GREEN)✅ Gemini CLI instalado e configurado com sucesso!$(NC)"
@@ -122,7 +116,7 @@ check-deps: ## ✅ Verificar se todas as dependências estão instaladas
 	@npx bmad-method status || (echo "$(YELLOW)⚠️  BMAD-Method pode não estar configurado$(NC)")
 	@echo "$(BLUE)📋 Verificando autenticação OAuth...$(NC)"
 	@echo "$(GREEN)✅ Usando autenticação OAuth (sem necessidade de API Key)$(NC)"
-	@echo "$(YELLOW)💡 Se houver problemas de autenticação, execute: make setup-oauth$(NC)"
+	@echo "$(YELLOW)💡 Se houver problemas de autenticação, execute: gemini -p '/auth'$(NC)"
 	@echo "$(GREEN)✅ Todas as dependências estão OK!$(NC)"
 
 test-connection: ## 🧪 Testar conexão com Gemini API
