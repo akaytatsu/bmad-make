@@ -104,6 +104,13 @@ setup-bmad: ## 🎯 Instalar e configurar BMAD-Method
 	@npx bmad-method install
 	@echo "$(GREEN)✅ BMAD-Method instalado com sucesso!$(NC)"
 
+setup-oauth: ## 🔐 Configurar autenticação OAuth do Gemini CLI
+	@echo "$(BLUE)🔐 Configurando autenticação OAuth...$(NC)"
+	@echo "$(YELLOW)💡 Uma janela do navegador será aberta para autenticação$(NC)"
+	@echo "$(YELLOW)💡 Faça login com sua conta Google quando solicitado$(NC)"
+	@gemini -p "/auth" || (echo "$(RED)❌ Erro na configuração OAuth$(NC)" && exit 1)
+	@echo "$(GREEN)✅ Autenticação OAuth configurada com sucesso!$(NC)"
+
 check-deps: ## ✅ Verificar se todas as dependências estão instaladas
 	@echo "$(CYAN)🔍 Verificando dependências...$(NC)"
 	@echo "$(BLUE)📋 Verificando Node.js...$(NC)"

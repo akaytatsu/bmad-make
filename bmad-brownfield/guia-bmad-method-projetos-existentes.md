@@ -561,8 +561,8 @@ npx bmad-method install
 1. Verifique se está usando a sintaxe correta: `@agente` seguido de `comando`
 2. Confirme que o Gemini CLI está configurado corretamente:
    ```bash
-   # Verificar se API key está configurada
-   echo $GEMINI_API_KEY
+   # Verificar autenticação OAuth
+   gemini -p "/auth"
 
    # Testar comando básico
    gemini -p "test"
