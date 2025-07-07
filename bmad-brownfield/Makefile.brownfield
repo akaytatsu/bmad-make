@@ -12,6 +12,10 @@ PROJECT_NAME := $(shell basename $(PWD))
 STORY_NUMBER ?= 1.1
 MAKEFLAGS += -f Makefile.brownfield
 
+# Configuração de idioma para todos os agentes
+LANG_INSTRUCTION := "IMPORTANTE: Responda sempre em português do Brasil (pt-BR). Todos os documentos, códigos, comentários e explicações devem estar em português brasileiro. Use terminologia técnica em português quando possível."
+AGENT_PREFIX := $(LANG_INSTRUCTION)
+
 # Cores para output
 RED := \033[0;31m
 GREEN := \033[0;32m
@@ -60,6 +64,9 @@ help: ## 📋 Exibir esta mensagem de ajuda
 	@echo "$(YELLOW)🔧 UTILITÁRIOS:$(NC)"
 	@echo "  $(GREEN)make status$(NC)           - Status das instalações"
 	@echo "  $(GREEN)make clean-docs$(NC)       - Limpar documentação gerada"
+	@echo "  $(GREEN)make configure-language$(NC) - Configurar idioma português brasileiro"
+	@echo "  $(GREEN)make manual-command$(NC)   - Executar comando manual com agente específico"
+	@echo "  $(GREEN)make dev-help$(NC)         - Comandos úteis para desenvolvimento"
 	@echo ""
 	@echo "$(YELLOW)📖 EXEMPLOS DE USO:$(NC)"
 	@echo "  $(CYAN)make install$(NC)                    # Primeira instalação"
@@ -70,6 +77,11 @@ help: ## 📋 Exibir esta mensagem de ajuda
 	@echo "  - Node.js v20+"
 	@echo "  - Conta Google para autenticação OAuth"
 	@echo "  - Projeto existente com estrutura definida"
+	@echo ""
+	@echo "$(YELLOW)🌐 IDIOMA:$(NC)"
+	@echo "  - Todos os agentes respondem em português brasileiro"
+	@echo "  - Documentos e códigos gerados em português"
+	@echo "  - Use 'make configure-language' para ver configurações"
 	@echo ""
 
 ##@ Instalação e Configuração
@@ -162,7 +174,7 @@ analyze: ## 📊 Documentar estado atual do projeto
 	@echo "$(BLUE)📊 Analisando estado atual do projeto '$(PROJECT_NAME)'...$(NC)"
 	@echo "$(YELLOW)⏱️  Tempo estimado: 5-10 minutos$(NC)"
 	@echo "$(CYAN)🤖 Executando: @analyst *document-project$(NC)"
-	@gemini -p "@analyst *document-project" || \
+	@gemini -p "$(AGENT_PREFIX) @analyst *document-project" || \
 		(echo "$(RED)❌ Erro na análise do projeto$(NC)" && exit 1)
 	@echo "$(GREEN)✅ Análise do projeto concluída!$(NC)"
 	@echo "$(BLUE)📄 Documentos gerados: docs/project-analysis.md$(NC)"
@@ -172,7 +184,7 @@ plan-prd: ## 📋 Criar PRD para brownfield
 	@echo "$(YELLOW)⏱️  Tempo estimado: 15-20 minutos$(NC)"
 	@echo "$(YELLOW)💡 Você será questionado sobre melhorias desejadas$(NC)"
 	@echo "$(CYAN)🤖 Executando: @pm *create-doc brownfield-prd$(NC)"
-	@gemini -p "@pm *create-doc brownfield-prd" || \
+	@gemini -p "$(AGENT_PREFIX) @pm *create-doc brownfield-prd" || \
 		(echo "$(RED)❌ Erro na criação do PRD$(NC)" && exit 1)
 	@echo "$(GREEN)✅ PRD para brownfield criado!$(NC)"
 	@echo "$(BLUE)📄 Documento gerado: docs/prd.md$(NC)"
@@ -182,7 +194,7 @@ plan-arch: ## 🏗️ Criar arquitetura para brownfield
 	@echo "$(YELLOW)⏱️  Tempo estimado: 20-30 minutos$(NC)"
 	@echo "$(YELLOW)💡 Você será questionado sobre arquitetura atual$(NC)"
 	@echo "$(CYAN)🤖 Executando: @architect *create-doc brownfield-architecture$(NC)"
-	@gemini -p "@architect *create-doc brownfield-architecture" || \
+	@gemini -p "$(AGENT_PREFIX) @architect *create-doc brownfield-architecture" || \
 		(echo "$(RED)❌ Erro na criação da arquitetura$(NC)" && exit 1)
 	@echo "$(GREEN)✅ Arquitetura para brownfield criada!$(NC)"
 	@echo "$(BLUE)📄 Documento gerado: docs/architecture.md$(NC)"
@@ -192,7 +204,7 @@ validate: ## ✅ Executar checklist de validação
 	@echo "$(YELLOW)⏱️  Tempo estimado: 10-15 minutos$(NC)"
 	@echo "$(YELLOW)💡 Revise cada item apresentado cuidadosamente$(NC)"
 	@echo "$(CYAN)🤖 Executando: @po *execute-checklist po-master-checklist$(NC)"
-	@gemini -p "@po *execute-checklist po-master-checklist" || \
+	@gemini -p "$(AGENT_PREFIX) @po *execute-checklist po-master-checklist" || \
 		(echo "$(RED)❌ Erro na validação$(NC)" && exit 1)
 	@echo "$(GREEN)✅ Validação concluída!$(NC)"
 
@@ -202,7 +214,7 @@ create-epic: ## 📝 Criar épico para brownfield
 	@echo "$(PURPLE)📝 Criando épico para projeto brownfield...$(NC)"
 	@echo "$(YELLOW)💡 Você definirá nome, objetivo e critérios de sucesso$(NC)"
 	@echo "$(CYAN)🤖 Executando: @pm *brownfield-create-epic$(NC)"
-	@gemini -p "@pm *brownfield-create-epic" || \
+	@gemini -p "$(AGENT_PREFIX) @pm *brownfield-create-epic" || \
 		(echo "$(RED)❌ Erro na criação do épico$(NC)" && exit 1)
 	@echo "$(GREEN)✅ Épico criado com sucesso!$(NC)"
 
@@ -210,7 +222,7 @@ create-stories: ## 📖 Criar histórias de usuário detalhadas
 	@echo "$(BLUE)📖 Criando histórias de usuário...$(NC)"
 	@echo "$(YELLOW)💡 Execute múltiplas vezes para criar várias histórias$(NC)"
 	@echo "$(CYAN)🤖 Executando: @sm create-next-story$(NC)"
-	@gemini -p "@sm create-next-story" || \
+	@gemini -p "$(AGENT_PREFIX) @sm create-next-story" || \
 		(echo "$(RED)❌ Erro na criação da história$(NC)" && exit 1)
 	@echo "$(GREEN)✅ História criada!$(NC)"
 	@echo "$(BLUE)💡 Para criar mais histórias, execute: make create-stories$(NC)"
@@ -221,43 +233,43 @@ implement-story: ## 💻 Implementar história específica
 	@echo "$(GREEN)💻 Implementando história $(STORY_NUMBER)...$(NC)"
 	@echo "$(YELLOW)💡 Use STORY_NUMBER=X.Y para especificar a história$(NC)"
 	@echo "$(CYAN)🤖 Executando: @dev implement story $(STORY_NUMBER)$(NC)"
-	@gemini -p "@dev implement story $(STORY_NUMBER)" || \
+	@gemini -p "$(AGENT_PREFIX) @dev implement story $(STORY_NUMBER)" || \
 		(echo "$(RED)❌ Erro na implementação da história$(NC)" && exit 1)
 	@echo "$(GREEN)✅ História $(STORY_NUMBER) implementada!$(NC)"
 
 refactor: ## 🔧 Refatorar código existente
 	@echo "$(YELLOW)🔧 Iniciando processo de refatoração...$(NC)"
 	@echo "$(BLUE)📊 Passo 1: Analisando projeto atual...$(NC)"
-	@gemini -p "@analyst *document-project"
+	@gemini -p "$(AGENT_PREFIX) @analyst *document-project"
 	@echo "$(BLUE)🏗️  Passo 2: Revisando arquitetura...$(NC)"
-	@gemini -p "@architect *review-architecture"
+	@gemini -p "$(AGENT_PREFIX) @architect *review-architecture"
 	@echo "$(BLUE)📋 Passo 3: Planejando refatoração...$(NC)"
-	@gemini -p "@pm *create-doc brownfield-prd"
+	@gemini -p "$(AGENT_PREFIX) @pm *create-doc brownfield-prd"
 	@echo "$(GREEN)✅ Análise de refatoração concluída!$(NC)"
 	@echo "$(YELLOW)💡 Próximo passo: Especifique o componente a refatorar$(NC)"
-	@echo "$(CYAN)💡 Exemplo: gemini -p '@dev refactor [nome-do-componente]'$(NC)"
+	@echo "$(CYAN)💡 Exemplo: gemini -p '$(AGENT_PREFIX) @dev refactor [nome-do-componente]'$(NC)"
 
 fix-bug: ## 🐛 Processo para corrigir bug complexo
 	@echo "$(RED)🐛 Iniciando processo de correção de bug...$(NC)"
 	@echo "$(BLUE)📊 Passo 1: Analisando problema...$(NC)"
-	@gemini -p "@analyst *document-project"
+	@gemini -p "$(AGENT_PREFIX) @analyst *document-project"
 	@echo "$(GREEN)✅ Análise inicial concluída!$(NC)"
 	@echo "$(YELLOW)💡 Próximos passos manuais:$(NC)"
-	@echo "$(CYAN)  1. gemini -p '@dev analyze bug [descrição-do-bug]'$(NC)"
-	@echo "$(CYAN)  2. gemini -p '@architect *design-fix [bug]'$(NC)"
-	@echo "$(CYAN)  3. gemini -p '@dev fix [bug]'$(NC)"
-	@echo "$(CYAN)  4. gemini -p '@qa validate [correção]'$(NC)"
+	@echo "$(CYAN)  1. gemini -p '$(AGENT_PREFIX) @dev analyze bug [descrição-do-bug]'$(NC)"
+	@echo "$(CYAN)  2. gemini -p '$(AGENT_PREFIX) @architect *design-fix [bug]'$(NC)"
+	@echo "$(CYAN)  3. gemini -p '$(AGENT_PREFIX) @dev fix [bug]'$(NC)"
+	@echo "$(CYAN)  4. gemini -p '$(AGENT_PREFIX) @qa validate [correção]'$(NC)"
 
 migrate: ## 🔄 Processo de migração de tecnologia
 	@echo "$(PURPLE)🔄 Iniciando processo de migração...$(NC)"
 	@echo "$(BLUE)📊 Passo 1: Documentando estado atual...$(NC)"
-	@gemini -p "@analyst *document-project"
+	@gemini -p "$(AGENT_PREFIX) @analyst *document-project"
 	@echo "$(GREEN)✅ Documentação inicial concluída!$(NC)"
 	@echo "$(YELLOW)💡 Próximos passos manuais:$(NC)"
-	@echo "$(CYAN)  1. gemini -p '@architect *create-doc migration-architecture'$(NC)"
-	@echo "$(CYAN)  2. gemini -p '@pm *create-migration-roadmap'$(NC)"
-	@echo "$(CYAN)  3. gemini -p '@po *execute-checklist migration-checklist'$(NC)"
-	@echo "$(CYAN)  4. gemini -p '@dev implement migration-phase [número]'$(NC)"
+	@echo "$(CYAN)  1. gemini -p '$(AGENT_PREFIX) @architect *create-doc migration-architecture'$(NC)"
+	@echo "$(CYAN)  2. gemini -p '$(AGENT_PREFIX) @pm *create-migration-roadmap'$(NC)"
+	@echo "$(CYAN)  3. gemini -p '$(AGENT_PREFIX) @po *execute-checklist migration-checklist'$(NC)"
+	@echo "$(CYAN)  4. gemini -p '$(AGENT_PREFIX) @dev implement migration-phase [número]'$(NC)"
 
 ##@ Utilitários
 
@@ -306,17 +318,26 @@ clean-docs: ## 🧹 Limpar documentação gerada
 
 ##@ Comandos de Desenvolvimento
 
+configure-language: ## 🌐 Configurar idioma português brasileiro para todos os agentes
+	@echo "$(CYAN)🌐 Configurando idioma português brasileiro...$(NC)"
+	@echo "$(BLUE)📝 Instrução de idioma configurada:$(NC)"
+	@echo "$(YELLOW)$(LANG_INSTRUCTION)$(NC)"
+	@echo ""
+	@echo "$(GREEN)✅ Todos os comandos do Makefile usarão português brasileiro!$(NC)"
+	@echo "$(BLUE)💡 Para comandos manuais, use sempre o prefixo:$(NC)"
+	@echo "$(CYAN)gemini -p '$(LANG_INSTRUCTION) @agente comando'$(NC)"
+
 dev-help: ## 🛠️ Comandos úteis para desenvolvimento
-	@echo "$(CYAN)🛠️  Comandos úteis do Gemini CLI:$(NC)"
+	@echo "$(CYAN)🛠️  Comandos úteis do Gemini CLI (em português):$(NC)"
 	@echo ""
 	@echo "$(YELLOW)📊 Sistema:$(NC)"
 	@echo "  $(GREEN)gemini -p '/help'$(NC)          - Ajuda do Gemini CLI"
 	@echo "  $(GREEN)gemini -p '/stats'$(NC)         - Estatísticas de uso"
 	@echo "  $(GREEN)gemini -p '/about'$(NC)         - Informações da versão"
 	@echo ""
-	@echo "$(YELLOW)📁 Arquivos:$(NC)"
-	@echo "  $(GREEN)gemini -p '@arquivo.txt Analise este arquivo'$(NC)"
-	@echo "  $(GREEN)gemini -p '@src/ Revise este código'$(NC)"
+	@echo "$(YELLOW)📁 Arquivos (com instrução de idioma):$(NC)"
+	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @arquivo.txt Analise este arquivo'$(NC)"
+	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @src/ Revise este código'$(NC)"
 	@echo ""
 	@echo "$(YELLOW)🔧 Shell:$(NC)"
 	@echo "  $(GREEN)gemini -p '!ls -la'$(NC)        - Executar comando shell"
@@ -325,6 +346,27 @@ dev-help: ## 🛠️ Comandos úteis para desenvolvimento
 	@echo "$(YELLOW)🎨 Configuração:$(NC)"
 	@echo "  $(GREEN)gemini -p '/theme'$(NC)         - Alterar tema"
 	@echo "  $(GREEN)gemini -p '/memory show'$(NC)   - Mostrar contexto"
+	@echo ""
+	@echo "$(YELLOW)🤖 Agentes BMAD (todos em português):$(NC)"
+	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @analyst [comando]'$(NC)"
+	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @pm [comando]'$(NC)"
+	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @architect [comando]'$(NC)"
+	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @dev [comando]'$(NC)"
+	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @sm [comando]'$(NC)"
+	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @po [comando]'$(NC)"
+	@echo "  $(GREEN)gemini -p '$(LANG_INSTRUCTION) @qa [comando]'$(NC)"
+
+manual-command: ## 🎯 Executar comando manual com agente específico (uso: make manual-command AGENT=analyst COMMAND="*document-project")
+	@if [ -z "$(AGENT)" ] || [ -z "$(COMMAND)" ]; then \
+		echo "$(RED)❌ Uso: make manual-command AGENT=nome_agente COMMAND=\"comando\"$(NC)"; \
+		echo "$(YELLOW)💡 Exemplo: make manual-command AGENT=analyst COMMAND=\"*document-project\"$(NC)"; \
+		echo "$(YELLOW)💡 Agentes disponíveis: analyst, pm, architect, dev, sm, po, qa$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(CYAN)🤖 Executando comando manual em português...$(NC)"
+	@echo "$(BLUE)Agente: @$(AGENT)$(NC)"
+	@echo "$(BLUE)Comando: $(COMMAND)$(NC)"
+	@gemini -p "$(AGENT_PREFIX) @$(AGENT) $(COMMAND)"
 
 # Validações internas
 _check_oauth:
