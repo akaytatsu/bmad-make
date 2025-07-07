@@ -76,9 +76,9 @@ help: ## 📋 Exibir esta mensagem de ajuda
 
 install: ## 🔧 Instalar Gemini CLI e BMAD-Method (comando principal)
 	@echo "$(CYAN)🚀 Iniciando instalação completa...$(NC)"
-	@$(MAKE) setup-gemini
-	@$(MAKE) setup-bmad
-	@$(MAKE) check-deps
+	@$(MAKE) -f Makefile.brownfield setup-gemini
+	@$(MAKE) -f Makefile.brownfield setup-bmad
+	@$(MAKE) -f Makefile.brownfield check-deps
 	@echo "$(GREEN)✅ Instalação completa finalizada!$(NC)"
 
 setup-gemini: ## 🤖 Instalar e configurar Gemini CLI
@@ -135,22 +135,22 @@ test-connection: ## 🧪 Testar conexão com Gemini API
 
 full-setup: ## 🚀 Configuração completa (instalação + verificação + teste)
 	@echo "$(CYAN)🚀 Iniciando configuração completa do ambiente...$(NC)"
-	@$(MAKE) install
-	@$(MAKE) test-connection
+	@$(MAKE) -f Makefile.brownfield install
+	@$(MAKE) -f Makefile.brownfield test-connection
 	@echo "$(GREEN)🎉 Ambiente completamente configurado e testado!$(NC)"
 	@echo "$(YELLOW)💡 Próximo passo: execute 'make brownfield-flow' para começar$(NC)"
 
 brownfield-flow: ## 🔄 Executar fluxo completo para projetos brownfield
 	@echo "$(CYAN)🔄 Iniciando fluxo completo para projeto brownfield...$(NC)"
 	@echo "$(YELLOW)📊 Fase 1: Análise e Documentação$(NC)"
-	@$(MAKE) analyze
+	@$(MAKE) -f Makefile.brownfield analyze
 	@echo "$(YELLOW)📋 Fase 2: Planejamento$(NC)"
-	@$(MAKE) plan-prd
-	@$(MAKE) plan-arch
+	@$(MAKE) -f Makefile.brownfield plan-prd
+	@$(MAKE) -f Makefile.brownfield plan-arch
 	@echo "$(YELLOW)✅ Fase 3: Validação$(NC)"
-	@$(MAKE) validate
+	@$(MAKE) -f Makefile.brownfield validate
 	@echo "$(YELLOW)📝 Fase 4: Criação de Épicos$(NC)"
-	@$(MAKE) create-epic
+	@$(MAKE) -f Makefile.brownfield create-epic
 	@echo "$(GREEN)🎉 Fluxo brownfield completo! Próximos passos:$(NC)"
 	@echo "$(CYAN)  1. make create-stories     # Criar histórias detalhadas$(NC)"
 	@echo "$(CYAN)  2. make implement-story    # Implementar primeira história$(NC)"
